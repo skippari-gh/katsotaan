@@ -1,0 +1,23 @@
+import assert from 'node:assert/strict';
+import { durationLimit, fitsDuration, formatRuntime } from '../lib/duration.ts';
+
+const movie = runtime => ({ mediaType: 'movie', runtime });
+assert.equal(fitsDuration(movie(120), durationLimit('120', '')), true, 'A two-hour movie fits two hours exactly');
+assert.equal(fitsDuration(movie(121), durationLimit('120', '')), false, 'A movie one minute over the budget is excluded');
+assert.equal(fitsDuration(movie(90), durationLimit('under90', '')), false, 'Under 90 is strict');
+assert.equal(fitsDuration(movie(90), durationLimit('90', '')), true, '90-minute preset is inclusive');
+assert.equal(fitsDuration(movie(150), durationLimit('150', '')), true);
+assert.equal(fitsDuration(movie(180), durationLimit('180', '')), true);
+assert.equal(fitsDuration(movie(107), durationLimit('custom', '107')), true, 'Custom boundary');
+assert.equal(fitsDuration(movie(108), durationLimit('custom', '107')), false);
+for (const value of [undefined, null, 0, -10, NaN, Infinity]) assert.equal(fitsDuration(movie(value), 120), false, 'Unknown runtimes never silently count as zero');
+assert.equal(fitsDuration({ mediaType: 'tv', runtime: 45 }, 120), false, 'Episode duration never becomes a full-film match');
+assert.equal(fitsDuration({ mediaType: 'tv', runtime: 45 }, durationLimit('all', '')), true, 'All runtimes does not filter series');
+assert.equal(fitsDuration(movie(null), durationLimit('all', '')), true, 'All runtimes restores unknown durations');
+assert.equal(fitsDuration(movie(300), durationLimit('all', '')), true, 'All runtimes restores long films');
+for (const input of ['', '0', '-20', '1.5', 'text', '1e2']) assert.equal(durationLimit('custom', input), null, 'Invalid input does not silently filter the library');
+assert.equal(formatRuntime(107), '1 h 47 min');
+assert.equal(formatRuntime(120), '2 h');
+assert.equal(formatRuntime(47), '47 min');
+assert.equal(formatRuntime(null), 'Kesto ei tiedossa');
+console.log('PASS: Time-budget boundaries, custom minutes, unknown durations, movie-only filtering, reset and duration formatting.');

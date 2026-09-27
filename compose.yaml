@@ -1,0 +1,17 @@
+services:
+  katsotaan:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_VIEWER_ONE_NAME: ${NEXT_PUBLIC_VIEWER_ONE_NAME:-Katsoja 1}
+        NEXT_PUBLIC_VIEWER_TWO_NAME: ${NEXT_PUBLIC_VIEWER_TWO_NAME:-Katsoja 2}
+    env_file: .env
+    environment:
+      DATA_DIR: /app/data
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - katsotaan-data:/app/data
+    restart: unless-stopped
+volumes:
+  katsotaan-data:
