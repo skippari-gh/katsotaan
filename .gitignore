@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Local secrets
+.env
+.env.local
+.env.*.local
+
+# Builds
+.next/
+dist/
+build/
+.vercel/
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
+
+# Logs
+*.log
